@@ -54,6 +54,7 @@ Signal
         GitExecutable.ExecutablePath ]
   ConfigureRequest.{ Option<ConfigurationRevision> Set }
   ConfiguredState.{ Set Owner ConfigurationRevision Readiness }
+  TranslatorConfiguration.{ ConfigurationRevision Vector<Set> Readiness }
   Invalid.{ Owner SettingName String }
   StaleRevision.{ Option<ConfigurationRevision> ConfigurationRevision }
   ConfigurationRefusal.[ Invalid
@@ -61,6 +62,10 @@ Signal
                          NotAuthorized.Caller
                          Unavailable ]
   MetaCall.{ Caller Query }
+  MetaTransportInput.[ Call.MetaCall RestoreTranslatorConfiguration ]
+  MetaTransportOutput.[ Answered.Response
+                         Restored.TranslatorConfiguration
+                         RestoreRefused.ConfigurationRefusal ]
   Admission.{ ByteLimit Timeout }
   PairedProcess.{ UserId GroupId ProcessId }
   PairedTranslator.{ UserId GroupId ProcessId }

@@ -195,6 +195,14 @@ pub struct ConfiguredState {
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct TranslatorConfiguration {
+    pub configuration_revision: ConfigurationRevision,
+    pub set_vector: std::vec::Vec<Set>,
+    pub readiness: Readiness,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct Invalid {
     pub owner: Owner,
     pub setting_name: SettingName,
@@ -222,6 +230,21 @@ pub enum ConfigurationRefusal {
 pub struct MetaCall {
     pub caller: signal_belief_nexus::Caller,
     pub query: Query,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum MetaTransportInput {
+    Call(MetaCall),
+    RestoreTranslatorConfiguration,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum MetaTransportOutput {
+    Answered(Response),
+    Restored(TranslatorConfiguration),
+    RestoreRefused(ConfigurationRefusal),
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -293,6 +316,7 @@ pub enum Response {
     Configured(ConfiguredState),
     ConfigureRefused(ConfigurationRefusal),
 }
+
 pub const ETHOS: &str = include_str!("../signal.ethos");
 
 impl signal::Contracted for Query {
