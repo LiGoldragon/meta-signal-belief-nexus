@@ -155,7 +155,7 @@ dependencies = [
 
 [[package]]
 name = "meta-signal-belief-nexus"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "datom-codec 0.32.3",
  "protos",
@@ -313,8 +313,8 @@ dependencies = [
 
 [[package]]
 name = "signal-belief-nexus"
-version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-belief-nexus?rev=ccfa452bf1b807c9f180a4cae70318e66afb9a11#ccfa452bf1b807c9f180a4cae70318e66afb9a11"
+version = "0.2.0"
+source = "git+https://github.com/LiGoldragon/signal-belief-nexus?rev=579cf898b4ebd633457c936858b1166f16e88716#579cf898b4ebd633457c936858b1166f16e88716"
 dependencies = [
  "datom-codec 0.32.3",
  "protos",
