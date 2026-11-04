@@ -23,7 +23,8 @@ pub enum SettingName {
     SubscriberCapacity,
     OrdinaryPeers,
     MetaPeers,
-    Layout(Layout),
+    Layout(signal_belief_nexus::Harness),
+    Placement(signal_belief_nexus::Kind),
     GenerationRetention,
     NexusFrameCapacity,
     NexusTransportTimeout,
@@ -157,12 +158,27 @@ pub struct Layout {
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct HarnessLayout {
+    pub harness: signal_belief_nexus::Harness,
+    pub layout: Layout,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct PlacementDefault {
+    pub kind: signal_belief_nexus::Kind,
+    pub placement: signal_belief_nexus::Placement,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub enum Set {
     RepositoryPolling(Timeout),
     SubscriberCapacity(i64),
     OrdinaryPeers(signal_belief_nexus::PeerList),
     MetaPeers(signal_belief_nexus::PeerList),
-    Layout(Layout),
+    Layout(HarnessLayout),
+    Placement(PlacementDefault),
     GenerationRetention(RetentionPolicy),
     NexusFrameCapacity(ByteLimit),
     NexusTransportTimeout(Timeout),
@@ -316,8 +332,7 @@ pub enum Response {
     Configured(ConfiguredState),
     ConfigureRefused(ConfigurationRefusal),
 }
-
-pub const ETHOS: &str = include_str!("../signal.ethos");
+const ETHOS: &str = include_str!("../signal.ethos");
 
 impl signal::Contracted for Query {
     const CONTRACT_SOURCE: &'static str = ETHOS;

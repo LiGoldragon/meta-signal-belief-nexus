@@ -1,11 +1,12 @@
 Signal
-[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerIdentity PeerList RelativePath ExecutablePath ] ] ; imports
+[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerIdentity PeerList RelativePath ExecutablePath
+                          Harness Kind Placement ] ] ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
 [ Owner.[ Nexus Translator ]                         ; types
   ConfigurationRevision.Integer
-  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout GenerationRetention
+  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout.Harness Placement.Kind GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
                 CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
                 TranslatorTransportTimeout AllowedNexusPeers GitExecutable ]
@@ -35,11 +36,14 @@ Signal
   RetentionPolicy.[ KeepAll KeepPrevious.PositiveInteger ]
   Layout.{ OwnedRoot GenerationsDirectory CurrentLink SettingsFile
             InstructionsSetting InstructionsFile SkillsDirectory }
+  HarnessLayout.{ Harness Layout }
+  PlacementDefault.{ Kind Placement }
   Set.[ RepositoryPolling.Timeout
         SubscriberCapacity.Integer
         OrdinaryPeers.PeerList
         MetaPeers.PeerList
-        Layout
+        Layout.HarnessLayout
+        Placement.PlacementDefault
         GenerationRetention.RetentionPolicy
         NexusFrameCapacity.ByteLimit
         NexusTransportTimeout.Timeout
