@@ -1,3 +1,310 @@
-//! Fresh version-1 Belief Nexus meta-signal crate scaffold.
-//!
-//! Meta-signal types will be generated from Ethos; no contract is authored here yet.
+#![allow(
+    dead_code,
+    non_camel_case_types,
+    non_snake_case,
+    clippy::type_complexity
+)]
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Owner {
+    Nexus,
+    Translator,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct ConfigurationRevision(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum SettingName {
+    RepositoryPolling,
+    SubscriberCapacity,
+    OrdinaryPeers,
+    MetaPeers,
+    Layout(Layout),
+    NexusFrameCapacity,
+    NexusTransportTimeout,
+    NexusSocket,
+    MetaNexusSocket,
+    CallTimeout,
+    OutputLimit,
+    TextBudget,
+    TranslatorFrameCapacity,
+    TranslatorTransportTimeout,
+    AllowedNexusPeers,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Readiness {
+    Awaiting(std::vec::Vec<SettingName>),
+    Ready,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Timeout(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct ByteLimit(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct NodeLimit(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct DepthLimit(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Budget {
+    pub node_limit: NodeLimit,
+    pub depth_limit: DepthLimit,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct SocketPath(pub String);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct OrdinarySocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct MetaSocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct OrdinaryTranslatorSocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct MetaTranslatorSocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct OrdinaryNexusSocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct MetaNexusSocketPath(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct OwnedRoot(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct GenerationsDirectory(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct CurrentLink(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct SettingsFile(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct InstructionsSetting(pub String);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct InstructionsFile(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct SkillsDirectory(pub signal_belief_nexus::RelativePath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Layout {
+    pub owned_root: OwnedRoot,
+    pub generations_directory: GenerationsDirectory,
+    pub current_link: CurrentLink,
+    pub settings_file: SettingsFile,
+    pub instructions_setting: InstructionsSetting,
+    pub instructions_file: InstructionsFile,
+    pub skills_directory: SkillsDirectory,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Set {
+    RepositoryPolling(Timeout),
+    SubscriberCapacity(i64),
+    OrdinaryPeers(signal_belief_nexus::PeerList),
+    MetaPeers(signal_belief_nexus::PeerList),
+    Layout(Layout),
+    NexusFrameCapacity(ByteLimit),
+    NexusTransportTimeout(Timeout),
+    NexusSocket(SocketPath),
+    MetaNexusSocket(SocketPath),
+    CallTimeout(Timeout),
+    OutputLimit(ByteLimit),
+    TextBudget(Budget),
+    TranslatorFrameCapacity(ByteLimit),
+    TranslatorTransportTimeout(Timeout),
+    AllowedNexusPeers(signal_belief_nexus::PeerList),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct ConfigureRequest {
+    pub configuration_revision_option: std::option::Option<ConfigurationRevision>,
+    pub set: Set,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct ConfiguredState {
+    pub set: Set,
+    pub owner: Owner,
+    pub configuration_revision: ConfigurationRevision,
+    pub readiness: Readiness,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Invalid {
+    pub owner: Owner,
+    pub setting_name: SettingName,
+    pub string: String,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct StaleRevision {
+    pub configuration_revision_option: std::option::Option<ConfigurationRevision>,
+    pub configuration_revision: ConfigurationRevision,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum ConfigurationRefusal {
+    Invalid(Invalid),
+    StaleRevision(StaleRevision),
+    NotAuthorized(signal_belief_nexus::Caller),
+    Unavailable,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct MetaCall {
+    pub caller: signal_belief_nexus::Caller,
+    pub query: Query,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct Admission {
+    pub byte_limit: ByteLimit,
+    pub timeout: Timeout,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct PairedProcess {
+    pub user_id: signal_belief_nexus::UserId,
+    pub group_id: signal_belief_nexus::GroupId,
+    pub process_id: signal_belief_nexus::ProcessId,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct NexusBootstrap {
+    pub ordinary_socket: OrdinarySocket,
+    pub meta_socket: MetaSocket,
+    pub admission: Admission,
+    pub paired_process: PairedProcess,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct TranslatorBootstrap {
+    pub ordinary_translator_socket: OrdinaryTranslatorSocket,
+    pub meta_translator_socket: MetaTranslatorSocket,
+    pub ordinary_nexus_socket: OrdinaryNexusSocket,
+    pub meta_nexus_socket_path: MetaNexusSocketPath,
+    pub admission: Admission,
+    pub paired_process: PairedProcess,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Bootstrap {
+    Nexus(NexusBootstrap),
+    Translator(TranslatorBootstrap),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Query {
+    Configure(ConfigureRequest),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum Response {
+    Configured(ConfiguredState),
+    ConfigureRefused(ConfigurationRefusal),
+}
+
+/// The authored schema whose digest identifies this meta contract on the wire.
+pub const ETHOS: &str = include_str!("../signal.ethos");
+
+impl signal::Contracted for Query {
+    const CONTRACT_SOURCE: &'static str = ETHOS;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use signal::{ByteViewable, Restorable, Signal, Signalizable};
+
+    #[test]
+    fn one_field_compare_and_set_restores_with_revision() {
+        let request = Query::Configure(ConfigureRequest {
+            configuration_revision_option: Some(ConfigurationRevision(11)),
+            set: Set::SubscriberCapacity(8),
+        });
+        let archived = request.signalize().expect("archive meta query");
+        assert_eq!(Signal::<Query>::from(archived.bytes().to_vec()).restore().unwrap(), request);
+
+        let response = Response::Configured(ConfiguredState {
+            set: Set::SubscriberCapacity(8),
+            owner: Owner::Nexus,
+            configuration_revision: ConfigurationRevision(12),
+            readiness: Readiness::Ready,
+        });
+        let archived = response.signalize().expect("archive meta response");
+        assert_eq!(Signal::<Response>::from(archived.bytes().to_vec()).restore().unwrap(), response);
+    }
+
+    #[test]
+    fn typed_bootstrap_names_every_socket_and_paired_process() {
+        let paired = PairedProcess {
+            user_id: signal_belief_nexus::UserId(1000),
+            group_id: signal_belief_nexus::GroupId(1000),
+            process_id: signal_belief_nexus::ProcessId(44),
+        };
+        let bootstrap = Bootstrap::Translator(TranslatorBootstrap {
+            ordinary_translator_socket: OrdinaryTranslatorSocket(SocketPath("/run/belief-translator.sock".into())),
+            meta_translator_socket: MetaTranslatorSocket(SocketPath("/run/belief-meta-translator.sock".into())),
+            ordinary_nexus_socket: OrdinaryNexusSocket(SocketPath("/run/belief.sock".into())),
+            meta_nexus_socket_path: MetaNexusSocketPath(SocketPath("/run/belief-meta.sock".into())),
+            admission: Admission { byte_limit: ByteLimit(1_048_576), timeout: Timeout(5_000) },
+            paired_process: paired,
+        });
+        match bootstrap {
+            Bootstrap::Translator(value) => assert_eq!(value.paired_process.process_id, signal_belief_nexus::ProcessId(44)),
+            Bootstrap::Nexus(_) => panic!("translator bootstrap changed variant"),
+        }
+    }
+}

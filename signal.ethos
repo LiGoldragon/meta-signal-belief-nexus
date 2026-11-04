@@ -1,0 +1,63 @@
+Signal
+[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerList RelativePath ] ] ; imports
+[ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
+[ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
+  ConfigureRefused.ConfigurationRefusal ]
+[ Owner.[ Nexus Translator ]                         ; types
+  ConfigurationRevision.Integer
+  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout
+                NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
+                CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
+                TranslatorTransportTimeout AllowedNexusPeers ]
+  Readiness.[ Awaiting.Vector<SettingName> Ready ]
+  Timeout.Integer
+  ByteLimit.Integer
+  NodeLimit.Integer
+  DepthLimit.Integer
+  Budget.{ NodeLimit DepthLimit }
+  SocketPath.String
+  OrdinarySocket.SocketPath
+  MetaSocket.SocketPath
+  OrdinaryTranslatorSocket.SocketPath
+  MetaTranslatorSocket.SocketPath
+  OrdinaryNexusSocket.SocketPath
+  MetaNexusSocketPath.SocketPath
+  OwnedRoot.RelativePath
+  GenerationsDirectory.RelativePath
+  CurrentLink.RelativePath
+  SettingsFile.RelativePath
+  InstructionsSetting.String
+  InstructionsFile.RelativePath
+  SkillsDirectory.RelativePath
+  Layout.{ OwnedRoot GenerationsDirectory CurrentLink SettingsFile
+            InstructionsSetting InstructionsFile SkillsDirectory }
+  Set.[ RepositoryPolling.Timeout
+        SubscriberCapacity.Integer
+        OrdinaryPeers.PeerList
+        MetaPeers.PeerList
+        Layout
+        NexusFrameCapacity.ByteLimit
+        NexusTransportTimeout.Timeout
+        NexusSocket.SocketPath
+        MetaNexusSocket.SocketPath
+        CallTimeout.Timeout
+        OutputLimit.ByteLimit
+        TextBudget.Budget
+        TranslatorFrameCapacity.ByteLimit
+        TranslatorTransportTimeout.Timeout
+        AllowedNexusPeers.PeerList ]
+  ConfigureRequest.{ Option<ConfigurationRevision> Set }
+  ConfiguredState.{ Set Owner ConfigurationRevision Readiness }
+  Invalid.{ Owner SettingName String }
+  StaleRevision.{ Option<ConfigurationRevision> ConfigurationRevision }
+  ConfigurationRefusal.[ Invalid
+                         StaleRevision
+                         NotAuthorized.Caller
+                         Unavailable ]
+  MetaCall.{ Caller Query }
+  Admission.{ ByteLimit Timeout }
+  PairedProcess.{ UserId GroupId ProcessId }
+  NexusBootstrap.{ OrdinarySocket MetaSocket Admission PairedProcess }
+  TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket
+                         OrdinaryNexusSocket MetaNexusSocketPath Admission PairedProcess }
+  Bootstrap.[ Nexus.NexusBootstrap Translator.TranslatorBootstrap ] ]
