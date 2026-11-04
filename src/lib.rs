@@ -237,14 +237,14 @@ pub struct StaleRevision {
 pub enum ConfigurationRefusal {
     Invalid(Invalid),
     StaleRevision(StaleRevision),
-    NotAuthorized(signal_belief_nexus::Caller),
+    NotAuthorized(translator::Caller),
     Unavailable,
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct MetaCall {
-    pub caller: signal_belief_nexus::Caller,
+    pub caller: translator::Caller,
     pub query: Query,
 }
 #[rustfmt::skip]
@@ -273,22 +273,22 @@ pub struct Admission {
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct PairedProcess {
-    pub user_id: signal_belief_nexus::UserId,
-    pub group_id: signal_belief_nexus::GroupId,
-    pub process_id: signal_belief_nexus::ProcessId,
+    pub user_id: translator::UserId,
+    pub group_id: translator::GroupId,
+    pub process_id: translator::ProcessId,
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct PairedTranslator {
-    pub user_id: signal_belief_nexus::UserId,
-    pub group_id: signal_belief_nexus::GroupId,
-    pub process_id: signal_belief_nexus::ProcessId,
+    pub user_id: translator::UserId,
+    pub group_id: translator::GroupId,
+    pub process_id: translator::ProcessId,
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
-pub struct BootstrapOwner(pub signal_belief_nexus::PeerIdentity);
+pub struct BootstrapOwner(pub translator::PeerBinding);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]

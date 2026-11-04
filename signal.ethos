@@ -1,6 +1,7 @@
 Signal
-[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerIdentity PeerList RelativePath ExecutablePath
-                          Harness Kind Placement ] ] ; imports
+[ :signal_belief_nexus:[ PeerList RelativePath ExecutablePath
+                          Harness Kind Placement ]
+  :translator:[ Caller UserId GroupId ProcessId PeerBinding ] ] ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
@@ -73,7 +74,7 @@ Signal
   Admission.{ ByteLimit Timeout }
   PairedProcess.{ UserId GroupId ProcessId }
   PairedTranslator.{ UserId GroupId ProcessId }
-  BootstrapOwner.PeerIdentity
+  BootstrapOwner.PeerBinding
   NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket MemoryPath
                     Admission PairedTranslator BootstrapOwner }
   TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket

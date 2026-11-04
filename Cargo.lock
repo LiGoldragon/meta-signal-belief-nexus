@@ -162,6 +162,7 @@ dependencies = [
  "rkyv",
  "signal",
  "signal-belief-nexus",
+ "translator",
 ]
 
 [[package]]
@@ -313,12 +314,13 @@ dependencies = [
 [[package]]
 name = "signal-belief-nexus"
 version = "0.1.0"
-source = "git+https://github.com/LiGoldragon/signal-belief-nexus?rev=85d481985916ab1172325b94f4a661c91620ce48#85d481985916ab1172325b94f4a661c91620ce48"
+source = "git+https://github.com/LiGoldragon/signal-belief-nexus?rev=fba4feb779ae1bb56274f92aa4c9e8a23f98b1d0#fba4feb779ae1bb56274f92aa4c9e8a23f98b1d0"
 dependencies = [
  "datom-codec 0.32.3",
  "protos",
  "rkyv",
  "signal",
+ "translator",
 ]
 
 [[package]]
@@ -380,6 +382,17 @@ name = "tinyvec"
 version = "1.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd3ca314f692efd6c868f8408f53fe444634a845f96c028b97d35f6a1f79f0ee"
+
+[[package]]
+name = "translator"
+version = "0.1.0"
+source = "git+https://github.com/LiGoldragon/translator?rev=751c326f11c874b527a69ce6377ce9e196aeca37#751c326f11c874b527a69ce6377ce9e196aeca37"
+dependencies = [
+ "datom-codec 0.32.3",
+ "protos",
+ "rkyv",
+ "signal",
+]
 
 [[package]]
 name = "unicode-ident"
