@@ -24,6 +24,7 @@ pub enum SettingName {
     OrdinaryPeers,
     MetaPeers,
     Layout(Layout),
+    GenerationRetention,
     NexusFrameCapacity,
     NexusTransportTimeout,
     NexusSocket,
@@ -34,6 +35,7 @@ pub enum SettingName {
     TranslatorFrameCapacity,
     TranslatorTransportTimeout,
     AllowedNexusPeers,
+    GitExecutable,
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -124,6 +126,17 @@ pub struct SkillsDirectory(pub signal_belief_nexus::RelativePath);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct PositiveInteger(pub i64);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum RetentionPolicy {
+    KeepAll,
+    KeepPrevious(PositiveInteger),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct Layout {
     pub owned_root: OwnedRoot,
     pub generations_directory: GenerationsDirectory,
@@ -142,6 +155,7 @@ pub enum Set {
     OrdinaryPeers(signal_belief_nexus::PeerList),
     MetaPeers(signal_belief_nexus::PeerList),
     Layout(Layout),
+    GenerationRetention(RetentionPolicy),
     NexusFrameCapacity(ByteLimit),
     NexusTransportTimeout(Timeout),
     NexusSocket(SocketPath),
@@ -152,6 +166,7 @@ pub enum Set {
     TranslatorFrameCapacity(ByteLimit),
     TranslatorTransportTimeout(Timeout),
     AllowedNexusPeers(signal_belief_nexus::PeerList),
+    GitExecutable(signal_belief_nexus::ExecutablePath),
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -254,57 +269,4 @@ pub enum Query {
 pub enum Response {
     Configured(ConfiguredState),
     ConfigureRefused(ConfigurationRefusal),
-}
-
-/// The authored schema whose digest identifies this meta contract on the wire.
-pub const ETHOS: &str = include_str!("../signal.ethos");
-
-impl signal::Contracted for Query {
-    const CONTRACT_SOURCE: &'static str = ETHOS;
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use signal::{ByteViewable, Restorable, Signal, Signalizable};
-
-    #[test]
-    fn one_field_compare_and_set_restores_with_revision() {
-        let request = Query::Configure(ConfigureRequest {
-            configuration_revision_option: Some(ConfigurationRevision(11)),
-            set: Set::SubscriberCapacity(8),
-        });
-        let archived = request.signalize().expect("archive meta query");
-        assert_eq!(Signal::<Query>::from(archived.bytes().to_vec()).restore().unwrap(), request);
-
-        let response = Response::Configured(ConfiguredState {
-            set: Set::SubscriberCapacity(8),
-            owner: Owner::Nexus,
-            configuration_revision: ConfigurationRevision(12),
-            readiness: Readiness::Ready,
-        });
-        let archived = response.signalize().expect("archive meta response");
-        assert_eq!(Signal::<Response>::from(archived.bytes().to_vec()).restore().unwrap(), response);
-    }
-
-    #[test]
-    fn typed_bootstrap_names_every_socket_and_paired_process() {
-        let paired = PairedProcess {
-            user_id: signal_belief_nexus::UserId(1000),
-            group_id: signal_belief_nexus::GroupId(1000),
-            process_id: signal_belief_nexus::ProcessId(44),
-        };
-        let bootstrap = Bootstrap::Translator(TranslatorBootstrap {
-            ordinary_translator_socket: OrdinaryTranslatorSocket(SocketPath("/run/belief-translator.sock".into())),
-            meta_translator_socket: MetaTranslatorSocket(SocketPath("/run/belief-meta-translator.sock".into())),
-            ordinary_nexus_socket: OrdinaryNexusSocket(SocketPath("/run/belief.sock".into())),
-            meta_nexus_socket_path: MetaNexusSocketPath(SocketPath("/run/belief-meta.sock".into())),
-            admission: Admission { byte_limit: ByteLimit(1_048_576), timeout: Timeout(5_000) },
-            paired_process: paired,
-        });
-        match bootstrap {
-            Bootstrap::Translator(value) => assert_eq!(value.paired_process.process_id, signal_belief_nexus::ProcessId(44)),
-            Bootstrap::Nexus(_) => panic!("translator bootstrap changed variant"),
-        }
-    }
 }

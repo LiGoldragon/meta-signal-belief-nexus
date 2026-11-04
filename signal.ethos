@@ -1,14 +1,14 @@
 Signal
-[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerList RelativePath ] ] ; imports
+[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerList RelativePath ExecutablePath ] ] ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
 [ Owner.[ Nexus Translator ]                         ; types
   ConfigurationRevision.Integer
-  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout
+  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
                 CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
-                TranslatorTransportTimeout AllowedNexusPeers ]
+                TranslatorTransportTimeout AllowedNexusPeers GitExecutable ]
   Readiness.[ Awaiting.Vector<SettingName> Ready ]
   Timeout.Integer
   ByteLimit.Integer
@@ -29,6 +29,8 @@ Signal
   InstructionsSetting.String
   InstructionsFile.RelativePath
   SkillsDirectory.RelativePath
+  PositiveInteger.Integer
+  RetentionPolicy.[ KeepAll KeepPrevious.PositiveInteger ]
   Layout.{ OwnedRoot GenerationsDirectory CurrentLink SettingsFile
             InstructionsSetting InstructionsFile SkillsDirectory }
   Set.[ RepositoryPolling.Timeout
@@ -36,6 +38,7 @@ Signal
         OrdinaryPeers.PeerList
         MetaPeers.PeerList
         Layout
+        GenerationRetention.RetentionPolicy
         NexusFrameCapacity.ByteLimit
         NexusTransportTimeout.Timeout
         NexusSocket.SocketPath
@@ -45,7 +48,8 @@ Signal
         TextBudget.Budget
         TranslatorFrameCapacity.ByteLimit
         TranslatorTransportTimeout.Timeout
-        AllowedNexusPeers.PeerList ]
+        AllowedNexusPeers.PeerList
+        GitExecutable.ExecutablePath ]
   ConfigureRequest.{ Option<ConfigurationRevision> Set }
   ConfiguredState.{ Set Owner ConfigurationRevision Readiness }
   Invalid.{ Owner SettingName String }
