@@ -1,11 +1,11 @@
 Signal
 [ :signal_belief_nexus:[ PeerList RelativePath ExecutablePath
-                          Harness Kind Placement ]
-  :translator:[ Caller UserId GroupId ProcessId PeerBinding ] ] ; imports
+                          Harness Kind Placement Owner ]
+  :translator:[ Caller UserId GroupId ProcessId ] ]             ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
-[ Owner.[ Nexus Translator ]                         ; types
+[ Keeper.[ Nexus Translator ]                        ; types
   ConfigurationRevision.Integer
   SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout.Harness Placement.Kind GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
@@ -58,9 +58,9 @@ Signal
         AllowedNexusPeers.PeerList
         GitExecutable.ExecutablePath ]
   ConfigureRequest.{ Option<ConfigurationRevision> Set }
-  ConfiguredState.{ Set Owner ConfigurationRevision Readiness }
+  ConfiguredState.{ Set Keeper ConfigurationRevision Readiness }
   TranslatorConfiguration.{ ConfigurationRevision Vector<Set> Readiness }
-  Invalid.{ Owner SettingName String }
+  Invalid.{ Keeper SettingName String }
   StaleRevision.{ Option<ConfigurationRevision> ConfigurationRevision }
   ConfigurationRefusal.[ Invalid
                          StaleRevision
@@ -74,7 +74,7 @@ Signal
   Admission.{ ByteLimit Timeout }
   PairedProcess.{ UserId GroupId ProcessId }
   PairedTranslator.{ UserId GroupId ProcessId }
-  BootstrapOwner.PeerBinding
+  BootstrapOwner.Owner
   NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket MemoryPath
                     Admission PairedTranslator BootstrapOwner }
   TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket

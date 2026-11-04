@@ -7,7 +7,7 @@
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
-pub enum Owner {
+pub enum Keeper {
     Nexus,
     Translator,
 }
@@ -204,7 +204,7 @@ pub struct ConfigureRequest {
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct ConfiguredState {
     pub set: Set,
-    pub owner: Owner,
+    pub keeper: Keeper,
     pub configuration_revision: ConfigurationRevision,
     pub readiness: Readiness,
 }
@@ -220,7 +220,7 @@ pub struct TranslatorConfiguration {
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct Invalid {
-    pub owner: Owner,
+    pub keeper: Keeper,
     pub setting_name: SettingName,
     pub string: String,
 }
@@ -288,7 +288,7 @@ pub struct PairedTranslator {
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
-pub struct BootstrapOwner(pub translator::PeerBinding);
+pub struct BootstrapOwner(pub signal_belief_nexus::Owner);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
