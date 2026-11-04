@@ -2,7 +2,7 @@ Signal
 [ :signal_belief_nexus:[ PeerList RelativePath ExecutablePath
                           Harness Kind Placement Owner ]
   :translator:[ Caller UserId GroupId ProcessId ] ]             ; imports
-[ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
+[ Configure.ConfigureRequest ]                       ; inputs: set one field; an expected revision makes it conditional
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
 [ Keeper.[ Nexus Translator ]                        ; types
@@ -57,7 +57,7 @@ Signal
         TranslatorTransportTimeout.Timeout
         AllowedNexusPeers.PeerList
         GitExecutable.ExecutablePath ]
-  ConfigureRequest.{ Option<ConfigurationRevision> Set }
+  ConfigureRequest.{ Option<ConfigurationRevision> Set } ; None is unconditional; Some is compare-and-set
   ConfiguredState.{ Set Keeper ConfigurationRevision Readiness }
   TranslatorConfiguration.{ ConfigurationRevision Vector<Set> Readiness }
   Invalid.{ Keeper SettingName String }
