@@ -98,6 +98,14 @@ pub struct MetaNexusSocketPath(pub SocketPath);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct EmissionTranslatorSocket(pub SocketPath);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct MemoryPath(pub String);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct OwnedRoot(pub signal_belief_nexus::RelativePath);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -233,11 +241,26 @@ pub struct PairedProcess {
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct PairedTranslator {
+    pub user_id: signal_belief_nexus::UserId,
+    pub group_id: signal_belief_nexus::GroupId,
+    pub process_id: signal_belief_nexus::ProcessId,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct BootstrapOwner(pub signal_belief_nexus::PeerIdentity);
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct NexusBootstrap {
     pub ordinary_socket: OrdinarySocket,
     pub meta_socket: MetaSocket,
+    pub emission_translator_socket: EmissionTranslatorSocket,
+    pub memory_path: MemoryPath,
     pub admission: Admission,
-    pub paired_process: PairedProcess,
+    pub paired_translator: PairedTranslator,
+    pub bootstrap_owner: BootstrapOwner,
 }
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
@@ -270,7 +293,6 @@ pub enum Response {
     Configured(ConfiguredState),
     ConfigureRefused(ConfigurationRefusal),
 }
-
 pub const ETHOS: &str = include_str!("../signal.ethos");
 
 impl signal::Contracted for Query {

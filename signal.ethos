@@ -1,5 +1,5 @@
 Signal
-[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerList RelativePath ExecutablePath ] ] ; imports
+[ :signal_belief_nexus:[ Caller UserId GroupId ProcessId PeerIdentity PeerList RelativePath ExecutablePath ] ] ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: compare and set one field
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
@@ -22,6 +22,8 @@ Signal
   MetaTranslatorSocket.SocketPath
   OrdinaryNexusSocket.SocketPath
   MetaNexusSocketPath.SocketPath
+  EmissionTranslatorSocket.SocketPath
+  MemoryPath.String
   OwnedRoot.RelativePath
   GenerationsDirectory.RelativePath
   CurrentLink.RelativePath
@@ -61,7 +63,10 @@ Signal
   MetaCall.{ Caller Query }
   Admission.{ ByteLimit Timeout }
   PairedProcess.{ UserId GroupId ProcessId }
-  NexusBootstrap.{ OrdinarySocket MetaSocket Admission PairedProcess }
+  PairedTranslator.{ UserId GroupId ProcessId }
+  BootstrapOwner.PeerIdentity
+  NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket MemoryPath
+                    Admission PairedTranslator BootstrapOwner }
   TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket
                          OrdinaryNexusSocket MetaNexusSocketPath Admission PairedProcess }
   Bootstrap.[ Nexus.NexusBootstrap Translator.TranslatorBootstrap ] ]
