@@ -270,3 +270,9 @@ pub enum Response {
     Configured(ConfiguredState),
     ConfigureRefused(ConfigurationRefusal),
 }
+
+pub const ETHOS: &str = include_str!("../signal.ethos");
+
+impl signal::Contracted for Query {
+    const CONTRACT_SOURCE: &'static str = ETHOS;
+}
