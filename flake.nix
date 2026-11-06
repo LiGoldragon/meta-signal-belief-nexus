@@ -14,9 +14,9 @@
         source = rust.cleanSource { root = ./.; extraFilters = [ (path: type: type == "regular" && pkgs.lib.hasSuffix ".ethos" (toString path)) ]; };
         cargoArtifacts = rust.craneLib.buildDepsOnly { src = source; cargoExtraArgs = "--all-features"; };
       in {
-        packages.default = rust.craneLib.buildPackage { pname = "meta-signal-belief-nexus"; version = "0.2.0"; src = source; inherit cargoArtifacts; cargoExtraArgs = "--all-features"; };
+        packages.default = rust.craneLib.buildPackage { pname = "meta-signal-belief-nexus"; version = "0.3.0"; src = source; inherit cargoArtifacts; cargoExtraArgs = "--all-features"; };
         checks = {
-          test = rust.craneLib.cargoTest { pname = "meta-signal-belief-nexus-test"; version = "0.2.0"; src = source; inherit cargoArtifacts; cargoTestExtraArgs = "--all-features"; };
+          test = rust.craneLib.cargoTest { pname = "meta-signal-belief-nexus-test"; version = "0.3.0"; src = source; inherit cargoArtifacts; cargoTestExtraArgs = "--all-features"; };
           generated = pkgs.runCommand "meta-signal-belief-nexus-generated" { generator = ethos-zero.packages.${system}.default; declaration = ./signal.ethos; committed = ./src/lib.rs; } ''
             temporary="$(${pkgs.coreutils}/bin/mktemp -d)"
             "$generator/bin/ethos-zero" "Generate.{ «$declaration» «$temporary» }"
