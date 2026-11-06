@@ -115,6 +115,27 @@ fn place_names_and_roots_that_are_unsafe_are_refused() {
         value.validated(USER),
         Err(BootstrapRefusal::RelativePlace("relative/state".into()))
     );
+    for path in [
+        "/run/user/1000/nexus/belief/",
+        "/run/user/1000//nexus/belief",
+        "/run/user/1000/./nexus/belief",
+        "/run/user/../1000/belief",
+    ] {
+        let mut value = bootstrap();
+        value.place.runtime = translator::Runtime(path.into());
+        assert_eq!(
+            value.validated(USER),
+            Err(BootstrapRefusal::UnnormalizedPlace(path.into())),
+            "{path:?}"
+        );
+        let mut value = bootstrap();
+        value.place.state = translator::State(path.into());
+        assert_eq!(
+            value.validated(USER),
+            Err(BootstrapRefusal::UnnormalizedPlace(path.into())),
+            "{path:?}"
+        );
+    }
     let mut value = bootstrap();
     value.place.runtime = translator::Runtime("relative/runtime".into());
     assert_eq!(
@@ -130,6 +151,11 @@ fn sockets_must_sit_directly_in_the_runtime_and_be_distinct() {
         "/run/user/1000/nexus/belief/sub/ordinary.sock",
         "/run/user/1000/nexus/belief/..",
         "/run/user/1000/nexus/belief/",
+        "/run/user/1000/nexus/belief/ordinary.sock/",
+        "/run/user/1000/nexus/belief/ordinary.sock/.",
+        "/run/user/1000/nexus/belief//ordinary.sock",
+        "/run/user/1000/nexus/belief/./ordinary.sock",
+        "/run/user/1000/nexus/belief/x\0y",
         "ordinary.sock",
     ] {
         let mut value = bootstrap();
@@ -191,31 +217,82 @@ fn the_envelope_names_this_contract_and_refuses_others() {
     );
 }
 
-/// The 0.3.0 shape, kept here as a mirror: a representative old frame, not every historical byte.
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-struct PreviousBootstrap {
-    ordinary_socket: String,
-    meta_socket: String,
-    emission_translator_socket: String,
-    memory_path: String,
-    byte_limit: i64,
-    timeout: i64,
+/// The published 0.3.0 `NexusBootstrap`, field for field, from meta-signal-belief-nexus at
+/// `9c90892` src/lib.rs: the three sockets, `MemoryPath`, `Admission`, `PairedTranslator` and
+/// `BootstrapOwner`. It is one representative old frame, not every historical byte sequence.
+mod previous {
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct SocketPath(pub String);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct OrdinarySocket(pub SocketPath);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct MetaSocket(pub SocketPath);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct EmissionTranslatorSocket(pub SocketPath);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct MemoryPath(pub String);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct ByteLimit(pub i64);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct Timeout(pub i64);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct Admission {
+        pub byte_limit: ByteLimit,
+        pub timeout: Timeout,
+    }
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct PairedTranslator {
+        pub user_id: translator::UserId,
+        pub group_id: translator::GroupId,
+        pub process_id: translator::ProcessId,
+    }
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct BootstrapOwner(pub signal_belief_nexus::Owner);
+    #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+    pub struct NexusBootstrap {
+        pub ordinary_socket: OrdinarySocket,
+        pub meta_socket: MetaSocket,
+        pub emission_translator_socket: EmissionTranslatorSocket,
+        pub memory_path: MemoryPath,
+        pub admission: Admission,
+        pub paired_translator: PairedTranslator,
+        pub bootstrap_owner: BootstrapOwner,
+    }
 }
 
 #[test]
 fn a_representative_previous_frame_does_not_restore_as_the_current_bootstrap() {
-    let previous = PreviousBootstrap {
-        ordinary_socket: "/run/o.sock".into(),
-        meta_socket: "/run/m.sock".into(),
-        emission_translator_socket: "/run/t.sock".into(),
-        memory_path: "/state/memory".into(),
-        byte_limit: 1_000_000,
-        timeout: 1_000,
+    use previous::*;
+    let old = previous::NexusBootstrap {
+        ordinary_socket: OrdinarySocket(SocketPath(
+            "/run/user/1000/nexus/belief/ordinary.sock".into(),
+        )),
+        meta_socket: MetaSocket(SocketPath("/run/user/1000/nexus/belief/meta.sock".into())),
+        emission_translator_socket: EmissionTranslatorSocket(SocketPath(
+            "/run/user/1000/nexus/belief/translator.sock".into(),
+        )),
+        memory_path: MemoryPath("/home/u/.local/state/nexus/belief/memory".into()),
+        admission: Admission {
+            byte_limit: ByteLimit(1_000_000),
+            timeout: Timeout(1_000),
+        },
+        paired_translator: PairedTranslator {
+            user_id: translator::UserId(USER),
+            group_id: translator::GroupId(100),
+            process_id: translator::ProcessId(42),
+        },
+        bootstrap_owner: BootstrapOwner(signal_belief_nexus::Owner::Login(translator::UserId(
+            USER,
+        ))),
     };
-    let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&previous)
+    let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&old)
         .expect("archive previous")
         .to_vec();
-    assert!(Signal::<NexusBootstrap>::from(bytes).restore().is_err());
+    assert!(
+        Signal::<meta_signal_belief_nexus::NexusBootstrap>::from(bytes)
+            .restore()
+            .is_err()
+    );
 }
 
 #[cfg(feature = "datom")]

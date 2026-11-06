@@ -344,6 +344,7 @@ impl signal::Contracted for Query {
 pub enum BootstrapRefusal {
     UnsafePlaceName(String),
     RelativePlace(String),
+    UnnormalizedPlace(String),
     UnsafeFileName(String),
     LegacyExtension(String),
     SocketOutsideRuntime(String),
@@ -377,31 +378,41 @@ fn single_component(value: &str) -> bool {
         && !value.contains('\0')
 }
 
-fn within(runtime: &std::path::Path, socket: &SocketPath) -> Result<(), BootstrapRefusal> {
-    let path = std::path::Path::new(&socket.0);
-    let named = path
-        .file_name()
-        .and_then(|name| name.to_str())
+fn within(runtime: &str, socket: &SocketPath) -> Result<(), BootstrapRefusal> {
+    let named = socket
+        .0
+        .strip_prefix(runtime)
+        .and_then(|rest| rest.strip_prefix('/'))
         .is_some_and(single_component);
-    if path.is_absolute() && named && path.parent() == Some(runtime) {
+    if named {
         Ok(())
     } else {
         Err(BootstrapRefusal::SocketOutsideRuntime(socket.0.clone()))
     }
 }
 
+fn normalized_absolute(value: &str) -> bool {
+    value.starts_with('/')
+        && !value.contains('\0')
+        && (value == "/"
+            || value[1..]
+                .split('/')
+                .all(|segment| !segment.is_empty() && segment != "." && segment != ".."))
+}
+
 impl Validating for NexusBootstrap {
     fn validated(&self, effective_user: i64) -> Result<(), BootstrapRefusal> {
         translator::placement::validate_place_name(&self.place.place_name.0)
             .map_err(|_| BootstrapRefusal::UnsafePlaceName(self.place.place_name.0.clone()))?;
-        let runtime = std::path::Path::new(&self.place.runtime.0);
-        let state = std::path::Path::new(&self.place.state.0);
-        if !runtime.is_absolute() {
-            return Err(BootstrapRefusal::RelativePlace(self.place.runtime.0.clone()));
+        for path in [&self.place.runtime.0, &self.place.state.0] {
+            if !std::path::Path::new(path).is_absolute() {
+                return Err(BootstrapRefusal::RelativePlace(path.clone()));
+            }
+            if !normalized_absolute(path) {
+                return Err(BootstrapRefusal::UnnormalizedPlace(path.clone()));
+            }
         }
-        if !state.is_absolute() {
-            return Err(BootstrapRefusal::RelativePlace(self.place.state.0.clone()));
-        }
+        let runtime = self.place.runtime.0.as_str();
         if !single_component(&self.memory_file_name.0) {
             return Err(BootstrapRefusal::UnsafeFileName(self.memory_file_name.0.clone()));
         }
