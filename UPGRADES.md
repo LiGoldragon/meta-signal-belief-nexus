@@ -10,5 +10,11 @@ with translator 0.3.0 (`eeaa`), Signal 10.3.0 (`7afb`), datom-codec 0.33.0
 newtypes additionally derive `PartialOrd` and `Ord`, and the integer ones also
 `Copy`. The authored ethos file is unchanged.
 
+The crate carries `tests/behavior.rs`: queries and responses restore through
+validated signal, scalar wrappers archive to the bytes of plain scalars, and under
+the `datom` feature queries, responses and a translator `Caller` inside a refusal
+round trip through Datom text, a scalar-bearing `Budget` writes the text of plain
+scalars. The flake runs the default selection and the `datom` selection.
+
 A consumer selects this contract together with signal-belief-nexus 0.3.1 and
 translator 0.3.0, so that one Signal and one translator meet in its graph.
