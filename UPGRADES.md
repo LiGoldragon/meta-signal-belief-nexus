@@ -1,5 +1,24 @@
 # Upgrades
 
+## 0.4.0 — a typed Place in the Nexus bootstrap
+
+`NexusBootstrap` carries `Place`, the published translator type with its place name, runtime
+and state, and `MemoryFileName`, in place of `MemoryPath`. The memory path is one value:
+the Place state joined with the file name. The three sockets stay explicit and are checked
+against the Place runtime. The crate adds `Validating`, `Locating` and `Enveloped`:
+`validated` refuses, before any effect, an unsafe place name, a relative runtime or state,
+a memory file name that is not one normal component or that is its own `sema` legacy name,
+a socket that is not directly in the runtime or not distinct, an owner that is not the
+effective user and a paired translator of another user. `Enveloped` is the 8-byte frame
+that precedes a Nexus bootstrap on its pipe: the digest of this contract, which changes
+with the ethos, so a bootstrap sent by another contract is refused before it is read.
+
+The Query and Response layouts are unchanged; the contract digest is not, so a 0.3.0 and a
+0.4.0 peer are refused at the greeting. The bootstrap archive layout changes; a representative
+0.3.0 frame does not restore as the new bootstrap, shown in `tests/bootstrap.rs`, and no claim
+is made about every historical byte sequence. Selects signal-belief-nexus 0.3.3 and
+translator 0.3.2 (`5719`).
+
 ## 0.3.0 — signal-belief-nexus 0.3.2, translator 0.3.1, Signal 10.3.0, ethos-zero 19.2.0
 
 This is the first upgrade of the text contract from 0.2.0, so it takes a minor

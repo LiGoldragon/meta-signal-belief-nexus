@@ -1,7 +1,7 @@
 Signal
 [ :signal_belief_nexus:[ PeerList RelativePath ExecutablePath
                           Harness Kind Placement Owner ]
-  :translator:[ Caller UserId GroupId ProcessId ] ]             ; imports
+  :translator:[ Caller UserId GroupId ProcessId Place ] ]             ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: set one field; an expected revision makes it conditional
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
@@ -25,7 +25,7 @@ Signal
   OrdinaryNexusSocket.SocketPath
   MetaNexusSocketPath.SocketPath
   EmissionTranslatorSocket.SocketPath
-  MemoryPath.String
+  MemoryFileName.String
   OwnedRoot.RelativePath
   GenerationsDirectory.RelativePath
   CurrentLink.RelativePath
@@ -75,7 +75,7 @@ Signal
   PairedProcess.{ UserId GroupId ProcessId }
   PairedTranslator.{ UserId GroupId ProcessId }
   BootstrapOwner.Owner
-  NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket MemoryPath
+  NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket Place MemoryFileName
                     Admission PairedTranslator BootstrapOwner }
   TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket
                          OrdinaryNexusSocket MetaNexusSocketPath Admission PairedProcess }

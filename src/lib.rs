@@ -103,7 +103,7 @@ pub struct EmissionTranslatorSocket(pub SocketPath);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
-pub struct MemoryPath(pub String);
+pub struct MemoryFileName(pub String);
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
@@ -296,7 +296,8 @@ pub struct NexusBootstrap {
     pub ordinary_socket: OrdinarySocket,
     pub meta_socket: MetaSocket,
     pub emission_translator_socket: EmissionTranslatorSocket,
-    pub memory_path: MemoryPath,
+    pub place: translator::Place,
+    pub memory_file_name: MemoryFileName,
     pub admission: Admission,
     pub paired_translator: PairedTranslator,
     pub bootstrap_owner: BootstrapOwner,
@@ -336,4 +337,116 @@ const ETHOS: &str = include_str!("../signal.ethos");
 
 impl signal::Contracted for Query {
     const CONTRACT_SOURCE: &'static str = ETHOS;
+}
+
+/// Why a Nexus bootstrap is refused before it has any effect.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum BootstrapRefusal {
+    UnsafePlaceName(String),
+    RelativePlace(String),
+    UnsafeFileName(String),
+    LegacyExtension(String),
+    SocketOutsideRuntime(String),
+    SocketsNotDistinct,
+    OwnerNotEffectiveUser,
+    PairedUserNotEffectiveUser,
+    EnvelopeMalformed,
+    EnvelopeMismatch,
+}
+
+/// A bootstrap that names a prepared Place, checked before any effect.
+pub trait Validating {
+    fn validated(&self, effective_user: i64) -> Result<(), BootstrapRefusal>;
+}
+
+/// The one memory path a bootstrap names: the Place state joined with the file name.
+pub trait Locating {
+    fn memory_path(&self) -> std::path::PathBuf;
+}
+
+/// The frame that precedes a bootstrap on its pipe, naming this contract.
+pub trait Enveloped {
+    fn envelope() -> Vec<u8>;
+    fn admit(bytes: &[u8]) -> Result<(), BootstrapRefusal>;
+}
+
+fn single_component(value: &str) -> bool {
+    let mut parts = std::path::Path::new(value).components();
+    matches!(parts.next(), Some(std::path::Component::Normal(part)) if part == value)
+        && parts.next().is_none()
+        && !value.contains('\0')
+}
+
+fn within(runtime: &std::path::Path, socket: &SocketPath) -> Result<(), BootstrapRefusal> {
+    let path = std::path::Path::new(&socket.0);
+    let named = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .is_some_and(single_component);
+    if path.is_absolute() && named && path.parent() == Some(runtime) {
+        Ok(())
+    } else {
+        Err(BootstrapRefusal::SocketOutsideRuntime(socket.0.clone()))
+    }
+}
+
+impl Validating for NexusBootstrap {
+    fn validated(&self, effective_user: i64) -> Result<(), BootstrapRefusal> {
+        translator::placement::validate_place_name(&self.place.place_name.0)
+            .map_err(|_| BootstrapRefusal::UnsafePlaceName(self.place.place_name.0.clone()))?;
+        let runtime = std::path::Path::new(&self.place.runtime.0);
+        let state = std::path::Path::new(&self.place.state.0);
+        if !runtime.is_absolute() {
+            return Err(BootstrapRefusal::RelativePlace(self.place.runtime.0.clone()));
+        }
+        if !state.is_absolute() {
+            return Err(BootstrapRefusal::RelativePlace(self.place.state.0.clone()));
+        }
+        if !single_component(&self.memory_file_name.0) {
+            return Err(BootstrapRefusal::UnsafeFileName(self.memory_file_name.0.clone()));
+        }
+        if std::path::Path::new(&self.memory_file_name.0).with_extension("sema").as_os_str()
+            == std::ffi::OsStr::new(&self.memory_file_name.0)
+        {
+            return Err(BootstrapRefusal::LegacyExtension(self.memory_file_name.0.clone()));
+        }
+        within(runtime, &self.ordinary_socket.0)?;
+        within(runtime, &self.meta_socket.0)?;
+        within(runtime, &self.emission_translator_socket.0)?;
+        if self.ordinary_socket.0 == self.meta_socket.0
+            || self.ordinary_socket.0 == self.emission_translator_socket.0
+            || self.meta_socket.0 == self.emission_translator_socket.0
+        {
+            return Err(BootstrapRefusal::SocketsNotDistinct);
+        }
+        match &self.bootstrap_owner.0 {
+            signal_belief_nexus::Owner::Login(user) if user.0 == effective_user => {}
+            _ => return Err(BootstrapRefusal::OwnerNotEffectiveUser),
+        }
+        if self.paired_translator.user_id.0 != effective_user {
+            return Err(BootstrapRefusal::PairedUserNotEffectiveUser);
+        }
+        Ok(())
+    }
+}
+
+impl Locating for NexusBootstrap {
+    fn memory_path(&self) -> std::path::PathBuf {
+        std::path::Path::new(&self.place.state.0).join(&self.memory_file_name.0)
+    }
+}
+
+impl Enveloped for NexusBootstrap {
+    fn envelope() -> Vec<u8> {
+        <Query as signal::Contracted>::contract_digest().0.to_le_bytes().to_vec()
+    }
+
+    fn admit(bytes: &[u8]) -> Result<(), BootstrapRefusal> {
+        let bytes: [u8; 8] = bytes.try_into().map_err(|_| BootstrapRefusal::EnvelopeMalformed)?;
+        if bytes == <Self as Enveloped>::envelope().as_slice() {
+            Ok(())
+        } else {
+            Err(BootstrapRefusal::EnvelopeMismatch)
+        }
+    }
 }
