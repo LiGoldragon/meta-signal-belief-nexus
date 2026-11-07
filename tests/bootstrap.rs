@@ -227,6 +227,41 @@ fn the_owner_and_the_paired_translator_must_be_the_effective_user() {
 }
 
 #[test]
+fn the_component_rule_is_exact() {
+    use meta_signal_belief_nexus::Component;
+    for good in ["a", "ordinary.sock", ".hidden", "a b"] {
+        assert!(good.is_one_component(), "{good:?}");
+    }
+    for bad in [
+        "", ".", "..", "x/", "x/.", "/x", "a/b", "x\0y", "./x", "x//",
+    ] {
+        assert!(!bad.is_one_component(), "{bad:?}");
+    }
+}
+
+#[test]
+fn admission_limits_must_be_positive() {
+    for (limit, timeout) in [(0, 1_000), (-1, 1_000), (1_000, 0), (1_000, -5), (0, 0)] {
+        let mut value = bootstrap();
+        value.admission = Admission {
+            byte_limit: ByteLimit(limit),
+            timeout: Timeout(timeout),
+        };
+        assert_eq!(
+            value.validated_admission(),
+            Err(BootstrapRefusal::InvalidAdmission),
+            "{limit} {timeout}"
+        );
+        assert_eq!(
+            value.validated(USER),
+            Err(BootstrapRefusal::InvalidAdmission),
+            "{limit} {timeout}"
+        );
+    }
+    assert_eq!(bootstrap().validated_admission(), Ok(()));
+}
+
+#[test]
 fn the_envelope_names_this_contract_and_refuses_others() {
     assert_eq!(NexusBootstrap::admit(&NexusBootstrap::envelope()), Ok(()));
     assert_eq!(

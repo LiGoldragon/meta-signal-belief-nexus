@@ -1,5 +1,16 @@
 # Upgrades
 
+## 0.4.1 — the validator owns the admission limits
+
+`Validating` gains `validated_admission`, which refuses a bootstrap whose byte limit or
+timeout is not positive with `BootstrapRefusal::InvalidAdmission`, and `validated` includes it.
+The launcher and the Nexus delegate this check to the contract instead of each holding the rule.
+`Component::is_one_component` is the one rule for a file or socket name: exactly one normal path
+component equal to the raw text, no NUL, which `validated` applies to the file name and the socket
+spellings and the launcher applies to every deployment name.
+No change to the authored ethos, the generated Rust, the archive, the contract digest or the
+Datom text.
+
 ## 0.4.0 — a typed Place in the Nexus bootstrap
 
 `NexusBootstrap` carries `Place`, the published translator type with its place name, runtime
