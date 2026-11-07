@@ -379,11 +379,12 @@ fn single_component(value: &str) -> bool {
 }
 
 fn within(runtime: &str, socket: &SocketPath) -> Result<(), BootstrapRefusal> {
-    let named = socket
-        .0
-        .strip_prefix(runtime)
-        .and_then(|rest| rest.strip_prefix('/'))
-        .is_some_and(single_component);
+    let remainder = if runtime == "/" {
+        socket.0.strip_prefix('/')
+    } else {
+        socket.0.strip_prefix(runtime).and_then(|rest| rest.strip_prefix('/'))
+    };
+    let named = remainder.is_some_and(single_component);
     if named {
         Ok(())
     } else {

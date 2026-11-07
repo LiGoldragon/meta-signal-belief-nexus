@@ -177,6 +177,34 @@ fn sockets_must_sit_directly_in_the_runtime_and_be_distinct() {
 }
 
 #[test]
+fn a_root_runtime_takes_its_sockets_with_exactly_one_slash() {
+    let mut value = bootstrap();
+    value.place.runtime = translator::Runtime("/".into());
+    value.ordinary_socket = OrdinarySocket(SocketPath("/ordinary.sock".into()));
+    value.meta_socket = MetaSocket(SocketPath("/meta.sock".into()));
+    value.emission_translator_socket =
+        EmissionTranslatorSocket(SocketPath("/translator.sock".into()));
+    assert_eq!(value.validated(USER), Ok(()));
+    for path in [
+        "//ordinary.sock",
+        "/ordinary.sock/",
+        "/sub/ordinary.sock",
+        "/",
+        "/.",
+        "/..",
+    ] {
+        value.ordinary_socket = OrdinarySocket(SocketPath(path.into()));
+        assert!(
+            matches!(
+                value.validated(USER),
+                Err(BootstrapRefusal::SocketOutsideRuntime(_))
+            ),
+            "{path:?}"
+        );
+    }
+}
+
+#[test]
 fn the_owner_and_the_paired_translator_must_be_the_effective_user() {
     assert_eq!(
         bootstrap().validated(USER + 1),
