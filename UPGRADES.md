@@ -1,15 +1,20 @@
 # Upgrades
 
-## 0.4.1 — the validator owns the admission limits
+## 0.4.1 — the contract owns the admission limits, and one component rule
 
-`Validating` gains `validated_admission`, which refuses a bootstrap whose byte limit or
-timeout is not positive with `BootstrapRefusal::InvalidAdmission`, and `validated` includes it.
-The launcher and the Nexus delegate this check to the contract instead of each holding the rule.
-`Component::is_one_component` is the one rule for a file or socket name: exactly one normal path
-component equal to the raw text, no NUL, which `validated` applies to the file name and the socket
-spellings and the launcher applies to every deployment name.
-No change to the authored ethos, the generated Rust, the archive, the contract digest or the
-Datom text.
+New, and no existing method changed: the trait `Admitting` with `admitted`, which refuses a bootstrap
+whose byte limit or timeout is not positive with the new `BootstrapRefusal::InvalidAdmission`;
+`Validating::validated` calls it. The launcher and the Nexus delegate this check to the contract
+instead of each holding the rule. `Validating` itself is unchanged, so an external implementor of it
+still compiles. The trait `Component` with `is_one_component` is the one rule for a file or socket
+name: exactly one normal path component equal to the raw text, no NUL; the socket spelling check, the
+file name check and the launcher's five deployment names all use it.
+
+API notes. `BootstrapRefusal` is a local Rust enum, with no archive or Datom form and no place in
+the authored ethos, so the new variant `InvalidAdmission` changes neither the wire nor the contract
+digest; it breaks only an exhaustive external `match` on that enum. The selected callers were
+checked: the belief body wraps and formats the refusal and has no exhaustive match. No change to the
+authored ethos, the generated Rust, the archive or the Datom text.
 
 ## 0.4.0 — a typed Place in the Nexus bootstrap
 

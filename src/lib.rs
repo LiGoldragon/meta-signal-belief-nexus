@@ -359,8 +359,12 @@ pub enum BootstrapRefusal {
 /// A bootstrap that names a prepared Place, checked before any effect.
 pub trait Validating {
     fn validated(&self, effective_user: i64) -> Result<(), BootstrapRefusal>;
-    /// The admission limits alone: both positive. `validated` includes it.
-    fn validated_admission(&self) -> Result<(), BootstrapRefusal>;
+}
+
+/// The admission limits alone: both positive. `Validating::validated` includes it, and the
+/// launcher and the Nexus delegate to it instead of each holding the rule.
+pub trait Admitting {
+    fn admitted(&self) -> Result<(), BootstrapRefusal>;
 }
 
 /// The one memory path a bootstrap names: the Place state joined with the file name.
@@ -412,16 +416,18 @@ fn normalized_absolute(value: &str) -> bool {
                 .all(|segment| !segment.is_empty() && segment != "." && segment != ".."))
 }
 
-impl Validating for NexusBootstrap {
-    fn validated_admission(&self) -> Result<(), BootstrapRefusal> {
+impl Admitting for NexusBootstrap {
+    fn admitted(&self) -> Result<(), BootstrapRefusal> {
         if self.admission.byte_limit.0 <= 0 || self.admission.timeout.0 <= 0 {
             return Err(BootstrapRefusal::InvalidAdmission);
         }
         Ok(())
     }
+}
 
+impl Validating for NexusBootstrap {
     fn validated(&self, effective_user: i64) -> Result<(), BootstrapRefusal> {
-        self.validated_admission()?;
+        self.admitted()?;
         translator::placement::validate_place_name(&self.place.place_name.0)
             .map_err(|_| BootstrapRefusal::UnsafePlaceName(self.place.place_name.0.clone()))?;
         for path in [&self.place.runtime.0, &self.place.state.0] {

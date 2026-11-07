@@ -1,9 +1,9 @@
 //! The Nexus bootstrap names a Place and a file, and is checked before it has any effect.
 
 use meta_signal_belief_nexus::{
-    Admission, BootstrapOwner, BootstrapRefusal, ByteLimit, EmissionTranslatorSocket, Enveloped,
-    Locating, MemoryFileName, MetaSocket, NexusBootstrap, OrdinarySocket, PairedTranslator,
-    SocketPath, Timeout, Validating,
+    Admission, Admitting, BootstrapOwner, BootstrapRefusal, ByteLimit, EmissionTranslatorSocket,
+    Enveloped, Locating, MemoryFileName, MetaSocket, NexusBootstrap, OrdinarySocket,
+    PairedTranslator, SocketPath, Timeout, Validating,
 };
 use signal::{ByteViewable, Restorable, Signal, Signalizable};
 
@@ -248,7 +248,7 @@ fn admission_limits_must_be_positive() {
             timeout: Timeout(timeout),
         };
         assert_eq!(
-            value.validated_admission(),
+            value.admitted(),
             Err(BootstrapRefusal::InvalidAdmission),
             "{limit} {timeout}"
         );
@@ -258,7 +258,7 @@ fn admission_limits_must_be_positive() {
             "{limit} {timeout}"
         );
     }
-    assert_eq!(bootstrap().validated_admission(), Ok(()));
+    assert_eq!(bootstrap().admitted(), Ok(()));
 }
 
 #[test]
