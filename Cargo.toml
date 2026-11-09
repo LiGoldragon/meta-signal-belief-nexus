@@ -1,6 +1,6 @@
 [package]
 name = "meta-signal-belief-nexus"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 rust-version = "1.89"
 license = "MIT"
@@ -17,5 +17,5 @@ datom-codec = { git = "https://github.com/LiGoldragon/datom-codec", rev = "09a05
 protos = { git = "https://github.com/LiGoldragon/protos", rev = "c93b598", optional = true }
 rkyv = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 signal = { git = "https://github.com/LiGoldragon/signal", rev = "6d4eb74", default-features = false }
-signal-belief-nexus = { git = "https://github.com/LiGoldragon/signal-belief-nexus", rev = "a6d3bda", default-features = false }
-translator = { git = "https://github.com/LiGoldragon/translator", rev = "abc89b9", default-features = false }
+signal-belief-nexus = { git = "https://github.com/LiGoldragon/signal-belief-nexus", rev = "011eea2", default-features = false }
+translator = { git = "https://github.com/LiGoldragon/translator", rev = "abc89b9", default-features = false, features = ["unix"] }

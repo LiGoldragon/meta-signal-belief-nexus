@@ -1,5 +1,9 @@
 # Upgrades
 
+## 0.6.1 — translator unix; signal-belief-nexus 0.4.2
+
+The translator dependency turns on its `unix` feature, which attaches libc and nix: the edge the build base's feature set asks of a repository that builds translator. signal-belief-nexus moves to 0.4.2 (011eea2), which carries the same edge. No change to the authored ethos, the generated Rust, the archive or the Datom text. The feature leaves this manifest when `unix` becomes a crate of its own.
+
 ## 0.6.0 — SettingAddress; signal-belief-nexus 0.4.1, translator 0.5.0, signal 11.0.0
 
 A setting kept per key is named once and its key sits beside it. `SettingName` names `HarnessLayouts` and `PlacementDefaults` with no payload (0.5.1 had `LayoutOfHarness.Harness` and `PlacementOfKind.Kind`); new `SettingKey.[ Harness Kind ]` and `SettingAddress.{ SettingName Option<SettingKey> }`; `Readiness.Awaiting` is a vector of `SettingAddress`, and `Invalid` carries a `SettingAddress` where it carried a `SettingName`. The pins move: signal-belief-nexus 0.4.1 (a6d3bda), translator 0.5.0 (abc89b9) and signal 11.0.0 (6d4eb74), which carries no transport feature and no tokio. A consumer repins the three together.

@@ -93,6 +93,16 @@ rec {
     #   inject test dependencies into the build
 
     crates = {
+      "autocfg" = rec {
+        crateName = "autocfg";
+        version = "1.5.1";
+        edition = "2015";
+        sha256 = "0lqasy5i30flcgih1b50kvsk6z32g09r1q4ql7q81pj6228jy0zj";
+        authors = [
+          "Josh Stone <cuviper@gmail.com>"
+        ];
+
+      };
       "bitflags" = rec {
         crateName = "bitflags";
         version = "2.13.2";
@@ -220,6 +230,16 @@ rec {
           "core" = [ "dep:core" ];
           "rustc-dep-of-std" = [ "core" ];
         };
+      };
+      "cfg_aliases" = rec {
+        crateName = "cfg_aliases";
+        version = "0.2.2";
+        edition = "2018";
+        sha256 = "09rm3dv28gbsal7w6q76lg2nfyn8wp789ska9b8vr1w750xfhygh";
+        authors = [
+          "Zicklag <zicklag@katharostech.com>"
+        ];
+
       };
       "datom-codec" = rec {
         crateName = "datom-codec";
@@ -556,7 +576,7 @@ rec {
           "rustc-std-workspace-core" = [ "dep:rustc-std-workspace-core" ];
           "use_std" = [ "std" ];
         };
-        resolvedDefaultFeatures = [ "std" ];
+        resolvedDefaultFeatures = [ "default" "extra_traits" "std" ];
       };
       "linux-raw-sys" = rec {
         crateName = "linux-raw-sys";
@@ -574,9 +594,27 @@ rec {
         };
         resolvedDefaultFeatures = [ "auxvec" "elf" "errno" "general" "ioctl" "no_std" "prctl" ];
       };
+      "memoffset" = rec {
+        crateName = "memoffset";
+        version = "0.9.1";
+        edition = "2015";
+        sha256 = "12i17wh9a9plx869g7j4whf62xw68k5zd4k0k5nh6ys5mszid028";
+        authors = [
+          "Gilad Naaman <gilad.naaman@gmail.com>"
+        ];
+        buildDependencies = [
+          {
+            name = "autocfg";
+            packageId = "autocfg";
+          }
+        ];
+        features = {
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
       "meta-signal-belief-nexus" = rec {
         crateName = "meta-signal-belief-nexus";
-        version = "0.6.0";
+        version = "0.6.1";
         edition = "2021";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
         libName = "meta_signal_belief_nexus";
@@ -611,6 +649,7 @@ rec {
             name = "translator";
             packageId = "translator";
             usesDefaultFeatures = false;
+            features = [ "unix" ];
           }
         ];
         features = {
@@ -663,6 +702,59 @@ rec {
           }
         ];
 
+      };
+      "nix" = rec {
+        crateName = "nix";
+        version = "0.30.1";
+        edition = "2021";
+        sha256 = "1dixahq9hk191g0c2ydc0h1ppxj0xw536y6rl63vlnp06lx3ylkl";
+        authors = [
+          "The nix-rust Project Developers"
+        ];
+        dependencies = [
+          {
+            name = "bitflags";
+            packageId = "bitflags";
+          }
+          {
+            name = "cfg-if";
+            packageId = "cfg-if";
+          }
+          {
+            name = "libc";
+            packageId = "libc";
+            features = [ "extra_traits" ];
+          }
+          {
+            name = "memoffset";
+            packageId = "memoffset";
+            optional = true;
+          }
+        ];
+        buildDependencies = [
+          {
+            name = "cfg_aliases";
+            packageId = "cfg_aliases";
+          }
+        ];
+        features = {
+          "aio" = [ "pin-utils" ];
+          "dir" = [ "fs" ];
+          "event" = [ "poll" ];
+          "memoffset" = [ "dep:memoffset" ];
+          "mount" = [ "uio" ];
+          "mqueue" = [ "fs" ];
+          "net" = [ "socket" ];
+          "pin-utils" = [ "dep:pin-utils" ];
+          "ptrace" = [ "process" ];
+          "sched" = [ "process" ];
+          "signal" = [ "process" ];
+          "socket" = [ "memoffset" ];
+          "ucontext" = [ "signal" ];
+          "user" = [ "feature" ];
+          "zerocopy" = [ "fs" "uio" ];
+        };
+        resolvedDefaultFeatures = [ "default" "memoffset" "poll" "socket" ];
       };
       "once_cell" = rec {
         crateName = "once_cell";
@@ -1189,13 +1281,13 @@ rec {
       };
       "signal-belief-nexus" = rec {
         crateName = "signal-belief-nexus";
-        version = "0.4.1";
+        version = "0.4.2";
         edition = "2021";
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/signal-belief-nexus";
-          rev = "a6d3bda2406c67486c9395c9e9547b84d34407d1";
-          sha256 = "1gdhn0ccwryb0scv8f4f7rsr1bcazicz7q30xpv1rp30q5cqpv41";
+          rev = "011eea2aa83bc07db1fb318b7dcb4d30267e7c2d";
+          sha256 = "0nmkmv6s7g57k5v3z5vqwk3vpf7vpc2m1lvj8vp6rq1yyyxafk7x";
         };
         libName = "signal_belief_nexus";
         dependencies = [
@@ -1224,6 +1316,7 @@ rec {
             name = "translator";
             packageId = "translator";
             usesDefaultFeatures = false;
+            features = [ "unix" ];
           }
         ];
         features = {
@@ -1427,6 +1520,17 @@ rec {
             optional = true;
           }
           {
+            name = "libc";
+            packageId = "libc";
+            optional = true;
+          }
+          {
+            name = "nix";
+            packageId = "nix";
+            optional = true;
+            features = [ "poll" "socket" ];
+          }
+          {
             name = "protos";
             packageId = "protos";
             optional = true;
@@ -1454,7 +1558,7 @@ rec {
           "text" = [ "datom" ];
           "unix" = [ "dep:libc" "dep:nix" ];
         };
-        resolvedDefaultFeatures = [ "datom" ];
+        resolvedDefaultFeatures = [ "datom" "unix" ];
       };
       "unicode-ident" = rec {
         crateName = "unicode-ident";
