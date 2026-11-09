@@ -43,8 +43,8 @@ Signal
         SubscriberCapacity.Integer
         OrdinaryPeers.PeerList
         MetaPeers.PeerList
-        LayoutOfHarness.HarnessLayout
-        PlacementOfKind.PlacementDefault
+        HarnessLayout
+        PlacementDefault
         GenerationRetention.RetentionPolicy
         NexusFrameCapacity.ByteLimit
         NexusTransportTimeout.Timeout

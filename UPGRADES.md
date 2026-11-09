@@ -1,5 +1,9 @@
 # Upgrades
 
+## 0.5.1 — Set writes HarnessLayout and PlacementDefault bare
+
+In `Set`, the variants `LayoutOfHarness.HarnessLayout` and `PlacementOfKind.PlacementDefault` of 0.5.0 are written bare: `HarnessLayout` and `PlacementDefault`, each carrying the type it is named for, the Rust unchanged but for the variant names `Set::HarnessLayout(HarnessLayout)` and `Set::PlacementDefault(PlacementDefault)`. `SettingName` keeps `LayoutOfHarness.Harness` and `PlacementOfKind.Kind`. A consumer matching `Set::LayoutOfHarness` and `Set::PlacementOfKind` matches the new names.
+
 ## 0.5.0 — variants renamed for ethos-zero 22.0.0; signal-belief-nexus 0.4.0, translator 0.4.2
 
 ethos-zero 22.0.0 refuses a variant named for a defined type that carries another payload. Four variants are renamed, with the same payloads: in `SettingName`, `Layout.Harness` becomes `LayoutOfHarness.Harness` and `Placement.Kind` becomes `PlacementOfKind.Kind`; in `Set`, `Layout.HarnessLayout` becomes `LayoutOfHarness.HarnessLayout` and `Placement.PlacementDefault` becomes `PlacementOfKind.PlacementDefault`. A consumer matching `SettingName::Layout`, `SettingName::Placement`, `Set::Layout` or `Set::Placement` matches the new names; the Datom text names the new variants. The pins move: signal-belief-nexus 0.4.0 (c388b11), translator 0.4.2 (27da70f), signal 10.4.1 (d77169d), datom-codec 09a0526, protos c93b598; the generator is ethos-zero 22.0.0 (1976e45). The `datom` feature carries signal/datom. The repository builds on build-base 9ee222c.
