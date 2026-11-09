@@ -44,8 +44,9 @@
             rustfmt --check --edition ${manifest.package.edition} ${rust}/src/lib.rs ${rust}/tests/*.rs
             touch $out
           '';
-          clippy = clippy "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" ];
-          doc = doc "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" ];
+          # The generated MetaTransportInput holds a MetaCall beside a unit variant.
+          clippy = clippy "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
+          doc = doc "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
         };
     };
 }
