@@ -361,7 +361,7 @@ fn a_representative_previous_frame_does_not_restore_as_the_current_bootstrap() {
 #[cfg(feature = "datom")]
 mod text {
     use super::*;
-    use datom_codec::{Actualizing, Budget, Composing, Datomizable, Potential};
+    use datom_codec::{Actualizing, Budget, Datomizable, Potential};
     use protos::{Protosizable, ReaderBudget, Textualizable};
 
     #[test]
