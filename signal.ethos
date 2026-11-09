@@ -7,7 +7,7 @@ Signal
   ConfigureRefused.ConfigurationRefusal ]
 [ Keeper.[ Nexus Translator ]                        ; types
   ConfigurationRevision.Integer
-  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers Layout.Harness Placement.Kind GenerationRetention
+  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers LayoutOfHarness.Harness PlacementOfKind.Kind GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
                 CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
                 TranslatorTransportTimeout AllowedNexusPeers GitExecutable ]
@@ -43,8 +43,8 @@ Signal
         SubscriberCapacity.Integer
         OrdinaryPeers.PeerList
         MetaPeers.PeerList
-        Layout.HarnessLayout
-        Placement.PlacementDefault
+        LayoutOfHarness.HarnessLayout
+        PlacementOfKind.PlacementDefault
         GenerationRetention.RetentionPolicy
         NexusFrameCapacity.ByteLimit
         NexusTransportTimeout.Timeout

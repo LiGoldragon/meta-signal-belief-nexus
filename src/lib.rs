@@ -23,8 +23,8 @@ pub enum SettingName {
     SubscriberCapacity,
     OrdinaryPeers,
     MetaPeers,
-    Layout(signal_belief_nexus::Harness),
-    Placement(signal_belief_nexus::Kind),
+    LayoutOfHarness(signal_belief_nexus::Harness),
+    PlacementOfKind(signal_belief_nexus::Kind),
     GenerationRetention,
     NexusFrameCapacity,
     NexusTransportTimeout,
@@ -177,8 +177,8 @@ pub enum Set {
     SubscriberCapacity(i64),
     OrdinaryPeers(signal_belief_nexus::PeerList),
     MetaPeers(signal_belief_nexus::PeerList),
-    Layout(HarnessLayout),
-    Placement(PlacementDefault),
+    LayoutOfHarness(HarnessLayout),
+    PlacementOfKind(PlacementDefault),
     GenerationRetention(RetentionPolicy),
     NexusFrameCapacity(ByteLimit),
     NexusTransportTimeout(Timeout),
@@ -397,7 +397,10 @@ fn within(runtime: &str, socket: &SocketPath) -> Result<(), BootstrapRefusal> {
     let remainder = if runtime == "/" {
         socket.0.strip_prefix('/')
     } else {
-        socket.0.strip_prefix(runtime).and_then(|rest| rest.strip_prefix('/'))
+        socket
+            .0
+            .strip_prefix(runtime)
+            .and_then(|rest| rest.strip_prefix('/'))
     };
     let named = remainder.is_some_and(Component::is_one_component);
     if named {
@@ -440,12 +443,18 @@ impl Validating for NexusBootstrap {
         }
         let runtime = self.place.runtime.0.as_str();
         if !self.memory_file_name.0.is_one_component() {
-            return Err(BootstrapRefusal::UnsafeFileName(self.memory_file_name.0.clone()));
+            return Err(BootstrapRefusal::UnsafeFileName(
+                self.memory_file_name.0.clone(),
+            ));
         }
-        if std::path::Path::new(&self.memory_file_name.0).with_extension("sema").as_os_str()
+        if std::path::Path::new(&self.memory_file_name.0)
+            .with_extension("sema")
+            .as_os_str()
             == std::ffi::OsStr::new(&self.memory_file_name.0)
         {
-            return Err(BootstrapRefusal::LegacyExtension(self.memory_file_name.0.clone()));
+            return Err(BootstrapRefusal::LegacyExtension(
+                self.memory_file_name.0.clone(),
+            ));
         }
         within(runtime, &self.ordinary_socket.0)?;
         within(runtime, &self.meta_socket.0)?;
@@ -475,11 +484,16 @@ impl Locating for NexusBootstrap {
 
 impl Enveloped for NexusBootstrap {
     fn envelope() -> Vec<u8> {
-        <Query as signal::Contracted>::contract_digest().0.to_le_bytes().to_vec()
+        <Query as signal::Contracted>::contract_digest()
+            .0
+            .to_le_bytes()
+            .to_vec()
     }
 
     fn admit(bytes: &[u8]) -> Result<(), BootstrapRefusal> {
-        let bytes: [u8; 8] = bytes.try_into().map_err(|_| BootstrapRefusal::EnvelopeMalformed)?;
+        let bytes: [u8; 8] = bytes
+            .try_into()
+            .map_err(|_| BootstrapRefusal::EnvelopeMalformed)?;
         if bytes == <Self as Enveloped>::envelope().as_slice() {
             Ok(())
         } else {

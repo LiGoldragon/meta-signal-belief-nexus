@@ -1,5 +1,9 @@
 # Upgrades
 
+## 0.5.0 — variants renamed for ethos-zero 22.0.0; signal-belief-nexus 0.4.0, translator 0.4.2
+
+ethos-zero 22.0.0 refuses a variant named for a defined type that carries another payload. Four variants are renamed, with the same payloads: in `SettingName`, `Layout.Harness` becomes `LayoutOfHarness.Harness` and `Placement.Kind` becomes `PlacementOfKind.Kind`; in `Set`, `Layout.HarnessLayout` becomes `LayoutOfHarness.HarnessLayout` and `Placement.PlacementDefault` becomes `PlacementOfKind.PlacementDefault`. A consumer matching `SettingName::Layout`, `SettingName::Placement`, `Set::Layout` or `Set::Placement` matches the new names; the Datom text names the new variants. The pins move: signal-belief-nexus 0.4.0 (c388b11), translator 0.4.2 (27da70f), signal 10.4.1 (d77169d), datom-codec 09a0526, protos c93b598; the generator is ethos-zero 22.0.0 (1976e45). The `datom` feature carries signal/datom. The repository builds on build-base 9ee222c.
+
 ## 0.4.1 — the contract owns the admission limits, and one component rule
 
 New, and no existing method changed: the trait `Admitting` with `admitted`, which refuses a bootstrap
