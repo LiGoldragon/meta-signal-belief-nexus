@@ -2,8 +2,8 @@
 
 use meta_signal_belief_nexus::{
     Budget, ByteLimit, ConfigurationRefusal, ConfigurationRevision, ConfigureRequest,
-    ConfiguredState, DepthLimit, Keeper, NodeLimit, Query, Readiness, Response, Set, SettingName,
-    SocketPath, Timeout,
+    ConfiguredState, DepthLimit, Keeper, NodeLimit, Query, Readiness, Response, Set,
+    SettingAddress, SettingName, SocketPath, Timeout,
 };
 use rkyv::rancor::Error;
 use signal::{ByteViewable, Restorable, Signal, Signalizable};
@@ -27,7 +27,16 @@ fn configured(set: Set) -> Response {
         set,
         keeper: Keeper::Translator,
         configuration_revision: ConfigurationRevision(4),
-        readiness: Readiness::Awaiting(vec![SettingName::TextBudget, SettingName::NexusSocket]),
+        readiness: Readiness::Awaiting(vec![
+            SettingAddress {
+                setting_name: SettingName::TextBudget,
+                setting_key_option: None,
+            },
+            SettingAddress {
+                setting_name: SettingName::NexusSocket,
+                setting_key_option: None,
+            },
+        ]),
     })
 }
 

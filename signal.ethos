@@ -7,11 +7,13 @@ Signal
   ConfigureRefused.ConfigurationRefusal ]
 [ Keeper.[ Nexus Translator ]                        ; types
   ConfigurationRevision.Integer
-  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers LayoutOfHarness.Harness PlacementOfKind.Kind GenerationRetention
+  SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers HarnessLayouts PlacementDefaults GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
                 CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
                 TranslatorTransportTimeout AllowedNexusPeers GitExecutable ]
-  Readiness.[ Awaiting.Vector<SettingName> Ready ]
+  SettingKey.[ Harness Kind ]                         ; the key of a setting kept per harness or per kind
+  SettingAddress.{ SettingName Option<SettingKey> }   ; one setting: its name and, where it has one, its key
+  Readiness.[ Awaiting.Vector<SettingAddress> Ready ]
   Timeout.Integer
   ByteLimit.Integer
   NodeLimit.Integer
@@ -60,7 +62,7 @@ Signal
   ConfigureRequest.{ Option<ConfigurationRevision> Set } ; None is unconditional; Some is compare-and-set
   ConfiguredState.{ Set Keeper ConfigurationRevision Readiness }
   TranslatorConfiguration.{ ConfigurationRevision Vector<Set> Readiness }
-  Invalid.{ Keeper SettingName String }
+  Invalid.{ Keeper SettingAddress String }
   StaleRevision.{ Option<ConfigurationRevision> ConfigurationRevision }
   ConfigurationRefusal.[ Invalid
                          StaleRevision

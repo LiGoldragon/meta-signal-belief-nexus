@@ -1,5 +1,9 @@
 # Upgrades
 
+## 0.6.0 — SettingAddress; signal-belief-nexus 0.4.1, translator 0.5.0, signal 11.0.0
+
+A setting kept per key is named once and its key sits beside it. `SettingName` names `HarnessLayouts` and `PlacementDefaults` with no payload (0.5.1 had `LayoutOfHarness.Harness` and `PlacementOfKind.Kind`); new `SettingKey.[ Harness Kind ]` and `SettingAddress.{ SettingName Option<SettingKey> }`; `Readiness.Awaiting` is a vector of `SettingAddress`, and `Invalid` carries a `SettingAddress` where it carried a `SettingName`. The pins move: signal-belief-nexus 0.4.1 (a6d3bda), translator 0.5.0 (abc89b9) and signal 11.0.0 (6d4eb74), which carries no transport feature and no tokio. A consumer repins the three together.
+
 ## 0.5.1 — Set writes HarnessLayout and PlacementDefault bare
 
 In `Set`, the variants `LayoutOfHarness.HarnessLayout` and `PlacementOfKind.PlacementDefault` of 0.5.0 are written bare: `HarnessLayout` and `PlacementDefault`, each carrying the type it is named for, the Rust unchanged but for the variant names `Set::HarnessLayout(HarnessLayout)` and `Set::PlacementDefault(PlacementDefault)`. `SettingName` keeps `LayoutOfHarness.Harness` and `PlacementOfKind.Kind`. A consumer matching `Set::LayoutOfHarness` and `Set::PlacementOfKind` matches the new names.

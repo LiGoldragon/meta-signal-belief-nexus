@@ -23,8 +23,8 @@ pub enum SettingName {
     SubscriberCapacity,
     OrdinaryPeers,
     MetaPeers,
-    LayoutOfHarness(signal_belief_nexus::Harness),
-    PlacementOfKind(signal_belief_nexus::Kind),
+    HarnessLayouts,
+    PlacementDefaults,
     GenerationRetention,
     NexusFrameCapacity,
     NexusTransportTimeout,
@@ -41,8 +41,22 @@ pub enum SettingName {
 #[rustfmt::skip]
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub enum SettingKey {
+    Harness(signal_belief_nexus::Harness),
+    Kind(signal_belief_nexus::Kind),
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
+pub struct SettingAddress {
+    pub setting_name: SettingName,
+    pub setting_key_option: std::option::Option<SettingKey>,
+}
+#[rustfmt::skip]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub enum Readiness {
-    Awaiting(std::vec::Vec<SettingName>),
+    Awaiting(std::vec::Vec<SettingAddress>),
     Ready,
 }
 #[rustfmt::skip]
@@ -221,7 +235,7 @@ pub struct TranslatorConfiguration {
 #[cfg_attr(feature = "datom", derive(datom_codec::Datomizable, datom_codec::Composing))]
 pub struct Invalid {
     pub keeper: Keeper,
-    pub setting_name: SettingName,
+    pub setting_address: SettingAddress,
     pub string: String,
 }
 #[rustfmt::skip]
