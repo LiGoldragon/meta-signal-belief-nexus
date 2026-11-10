@@ -16,12 +16,13 @@
     { self, base, ethos-zero }:
     base.lib.workspaceOutputs {
       cargoNix = ./Cargo.nix;
+      lintFlags = [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
 
       # Every test runs with every feature on.
       memberChecks = { check, ... }: { meta-signal-belief-nexus = check "meta-signal-belief-nexus" [ "default" "datom" ]; };
 
       extraChecks =
-        { pkgs, toolchain, check, doc, clippy, ... }:
+        { pkgs, toolchain, check, doc, ... }:
         let
           manifest = builtins.fromTOML (builtins.readFile ./Cargo.toml);
           rust = pkgs.lib.fileset.toSource {
@@ -45,7 +46,6 @@
             touch $out
           '';
           # The generated MetaTransportInput holds a MetaCall beside a unit variant.
-          clippy = clippy "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
           doc = doc "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
         };
     };
