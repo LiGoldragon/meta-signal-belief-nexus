@@ -614,7 +614,7 @@ rec {
       };
       "meta-signal-belief-nexus" = rec {
         crateName = "meta-signal-belief-nexus";
-        version = "1.1.0";
+        version = "0.7.0";
         edition = "2021";
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
         libName = "meta_signal_belief_nexus";
@@ -1286,13 +1286,13 @@ rec {
       };
       "signal-belief-nexus" = rec {
         crateName = "signal-belief-nexus";
-        version = "1.0.0";
+        version = "0.5.0";
         edition = "2021";
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/LiGoldragon/signal-belief-nexus";
-          rev = "c8542d3ac380130190f3d2592b9c1c2f342e3ffa";
-          sha256 = "1z9ikhh62hq75pybj57dhc5pwsz9vqdmjy7c82plnk30wi88wvk7";
+          rev = "43e7f344257dab136097ca4233086d850ce20fdc";
+          sha256 = "1w7bvagam0mlbnjwy11326vq0lxrazkba7yxfsp3cw4izh87y235";
         };
         libName = "signal_belief_nexus";
         dependencies = [
