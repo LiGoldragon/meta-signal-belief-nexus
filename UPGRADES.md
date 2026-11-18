@@ -1,5 +1,13 @@
 # Upgrades
 
+## 0.7.0 — 1.0.0 and 1.1.0 renumbered to the 0.x line; signal-belief-nexus 0.5.0
+
+A breaking change on a 0.x crate takes the next minor, so the contract published as 1.0.0
+(d85f795) and 1.1.0 (d983bc0) is renumbered 0.7.0. The contract, its archive and its Datom text
+are those of 1.1.0; only the version moves, with the pin of signal-belief-nexus, which moves from
+1.0.0 (c8542d3) to the same contract renumbered 0.5.0 (e8acf79). 1.0.0 and 1.1.0 were never
+deployed and leave the build base's registry. A consumer pins 0.7.0 with signal-belief-nexus 0.5.0.
+
 ## 1.1.0 — AllowedNexusPeers leaves the settings
 
 `AllowedNexusPeers` leaves `SettingName` and `Set`. The translator admits its paired Nexus through
