@@ -2,8 +2,8 @@
 
 use meta_signal_belief_nexus::{
     Budget, ByteLimit, ConfigurationRefusal, ConfigurationRevision, ConfigureRequest,
-    ConfiguredState, DepthLimit, Keeper, NodeLimit, Query, Readiness, Response, Set,
-    SettingAddress, SettingName, SocketPath, Timeout,
+    ConfiguredState, DepthLimit, Input, Keeper, NodeLimit, Output, Readiness, Set, SettingAddress,
+    SettingName, SocketPath, Timeout,
 };
 use rkyv::rancor::Error;
 use signal::{ByteViewable, Restorable, Signal, Signalizable};
@@ -15,15 +15,15 @@ fn budget() -> Budget {
     }
 }
 
-fn configure(set: Set) -> Query {
-    Query::Configure(ConfigureRequest {
+fn configure(set: Set) -> Input {
+    Input::Configure(ConfigureRequest {
         configuration_revision_option: Some(ConfigurationRevision(3)),
         set,
     })
 }
 
-fn configured(set: Set) -> Response {
-    Response::Configured(ConfiguredState {
+fn configured(set: Set) -> Output {
+    Output::Configured(ConfiguredState {
         set,
         keeper: Keeper::Translator,
         configuration_revision: ConfigurationRevision(4),
@@ -47,8 +47,8 @@ fn caller() -> translator::Caller {
     }
 }
 
-fn refused() -> Response {
-    Response::ConfigureRefused(ConfigurationRefusal::NotAuthorized(caller()))
+fn refused() -> Output {
+    Output::ConfigureRefused(ConfigurationRefusal::NotAuthorized(caller()))
 }
 
 #[test]
@@ -62,7 +62,7 @@ fn queries_and_responses_restore_through_validated_signal() {
         let query = configure(set.clone());
         let archived = query.signalize().expect("archive query");
         assert_eq!(
-            Signal::<Query>::from(archived.bytes().to_vec())
+            Signal::<Input>::from(archived.bytes().to_vec())
                 .restore()
                 .unwrap(),
             query
@@ -70,7 +70,7 @@ fn queries_and_responses_restore_through_validated_signal() {
         let response = configured(set);
         let archived = response.signalize().expect("archive response");
         assert_eq!(
-            Signal::<Response>::from(archived.bytes().to_vec())
+            Signal::<Output>::from(archived.bytes().to_vec())
                 .restore()
                 .unwrap(),
             response
@@ -78,7 +78,7 @@ fn queries_and_responses_restore_through_validated_signal() {
     }
     let archived = refused().signalize().expect("archive refusal");
     assert_eq!(
-        Signal::<Response>::from(archived.bytes().to_vec())
+        Signal::<Output>::from(archived.bytes().to_vec())
             .restore()
             .unwrap(),
         refused()
@@ -132,16 +132,41 @@ mod text {
         ] {
             let query = configure(set.clone());
             let text = written(&query);
-            assert_eq!(read::<Query>(&text), query);
-            assert_eq!(written(&read::<Query>(&text)), text);
+            assert_eq!(read::<Input>(&text), query);
+            assert_eq!(written(&read::<Input>(&text)), text);
             let response = configured(set);
-            assert_eq!(read::<Response>(&written(&response)), response);
+            assert_eq!(read::<Output>(&written(&response)), response);
         }
     }
 
     #[test]
+    fn the_configures_metaflow_writes_are_read_as_they_were() {
+        assert_eq!(
+            read::<Input>("Configure.{ None RepositoryPolling.211 }"),
+            Input::Configure(ConfigureRequest {
+                configuration_revision_option: None,
+                set: Set::RepositoryPolling(Timeout(211)),
+            })
+        );
+        let peer = translator::PeerBinding {
+            peer_id: translator::PeerId("flow".into()),
+            peer_identity: translator::PeerIdentity {
+                user_id: translator::UserId(1000),
+                process_id: translator::ProcessId(42),
+            },
+        };
+        assert_eq!(
+            read::<Input>("Configure.{ None OrdinaryPeers.[ { flow { 1000 42 } } ] }"),
+            Input::Configure(ConfigureRequest {
+                configuration_revision_option: None,
+                set: Set::OrdinaryPeers(signal_belief_nexus::PeerList(vec![peer])),
+            })
+        );
+    }
+
+    #[test]
     fn translator_identity_in_a_refusal_round_trips_through_text() {
-        assert_eq!(read::<Response>(&written(&refused())), refused());
+        assert_eq!(read::<Output>(&written(&refused())), refused());
     }
 
     #[test]

@@ -1,7 +1,7 @@
 Signal
 [ :signal_belief_nexus:[ PeerList RelativePath ExecutablePath
-                          Harness Kind Placement Owner ]
-  :translator:[ Caller UserId GroupId ProcessId Place ] ]             ; imports
+                          Harness Kind Placement ]
+  :translator:[ Caller ] ]                           ; imports
 [ Configure.ConfigureRequest ]                       ; inputs: set one field; an expected revision makes it conditional
 [ Configured.ConfiguredState                         ; outputs: the one coherent configuration revision
   ConfigureRefused.ConfigurationRefusal ]
@@ -20,14 +20,6 @@ Signal
   DepthLimit.Integer
   Budget.{ NodeLimit DepthLimit }
   SocketPath.String
-  OrdinarySocket.SocketPath
-  MetaSocket.SocketPath
-  OrdinaryTranslatorSocket.SocketPath
-  MetaTranslatorSocket.SocketPath
-  OrdinaryNexusSocket.SocketPath
-  MetaNexusSocketPath.SocketPath
-  EmissionTranslatorSocket.SocketPath
-  MemoryFileName.String
   OwnedRoot.RelativePath
   GenerationsDirectory.RelativePath
   CurrentLink.RelativePath
@@ -67,18 +59,4 @@ Signal
   ConfigurationRefusal.[ Invalid
                          StaleRevision
                          NotAuthorized.Caller
-                         Unavailable ]
-  MetaCall.{ Caller Query }
-  MetaTransportInput.[ Call.MetaCall RestoreTranslatorConfiguration ]
-  MetaTransportOutput.[ Answered.Response
-                         Restored.TranslatorConfiguration
-                         RestoreRefused.ConfigurationRefusal ]
-  Admission.{ ByteLimit Timeout }
-  PairedProcess.{ UserId GroupId ProcessId }
-  PairedTranslator.{ UserId GroupId ProcessId }
-  BootstrapOwner.Owner
-  NexusBootstrap.{ OrdinarySocket MetaSocket EmissionTranslatorSocket Place MemoryFileName
-                    Admission PairedTranslator BootstrapOwner }
-  TranslatorBootstrap.{ OrdinaryTranslatorSocket MetaTranslatorSocket
-                         OrdinaryNexusSocket MetaNexusSocketPath Admission PairedProcess }
-  Bootstrap.[ Nexus.NexusBootstrap Translator.TranslatorBootstrap ] ]
+                         Unavailable ] ]

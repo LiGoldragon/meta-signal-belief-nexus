@@ -45,7 +45,7 @@
             rustfmt --check --edition ${manifest.package.edition} ${rust}/src/lib.rs ${rust}/tests/*.rs
             touch $out
           '';
-          # The generated MetaTransportInput holds a MetaCall beside a unit variant.
+          # The generated Set holds a HarnessLayout beside scalar variants.
           doc = doc "meta-signal-belief-nexus" [ "default" "datom" ] [ "-D" "warnings" "-A" "clippy::large_enum_variant" ];
         };
     };
