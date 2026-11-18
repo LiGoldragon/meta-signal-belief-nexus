@@ -35,7 +35,6 @@ pub enum SettingName {
     TextBudget,
     TranslatorFrameCapacity,
     TranslatorTransportTimeout,
-    AllowedNexusPeers,
     GitExecutable,
 }
 #[rustfmt::skip]
@@ -171,7 +170,6 @@ pub enum Set {
     TextBudget(Budget),
     TranslatorFrameCapacity(ByteLimit),
     TranslatorTransportTimeout(Timeout),
-    AllowedNexusPeers(signal_belief_nexus::PeerList),
     GitExecutable(signal_belief_nexus::ExecutablePath),
 }
 #[rustfmt::skip]

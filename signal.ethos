@@ -10,7 +10,7 @@ Signal
   SettingName.[ RepositoryPolling SubscriberCapacity OrdinaryPeers MetaPeers HarnessLayouts PlacementDefaults GenerationRetention
                 NexusFrameCapacity NexusTransportTimeout NexusSocket MetaNexusSocket
                 CallTimeout OutputLimit TextBudget TranslatorFrameCapacity
-                TranslatorTransportTimeout AllowedNexusPeers GitExecutable ]
+                TranslatorTransportTimeout GitExecutable ]
   SettingKey.[ Harness Kind ]                         ; the key of a setting kept per harness or per kind
   SettingAddress.{ SettingName Option<SettingKey> }   ; one setting: its name and, where it has one, its key
   Readiness.[ Awaiting.Vector<SettingAddress> Ready ]
@@ -49,7 +49,6 @@ Signal
         TextBudget.Budget
         TranslatorFrameCapacity.ByteLimit
         TranslatorTransportTimeout.Timeout
-        AllowedNexusPeers.PeerList
         GitExecutable.ExecutablePath ]
   ConfigureRequest.{ Option<ConfigurationRevision> Set } ; None is unconditional; Some is compare-and-set
   ConfiguredState.{ Set Keeper ConfigurationRevision Readiness }
